@@ -102,4 +102,37 @@ async function getData() {
   fetchDoctors();
 };
 
+// Creates the input and search button
+function createForm() {
+  const form = document.createElement('form');
+  const searchInput = document.createElement('input');
+  const submitInput = document.createElement('input');
+
+  form.classList = 'form';
+  document.querySelector('#searchContainer').appendChild(form);
+  
+  searchInput.type = 'text';
+  searchInput.classList = 'search-input';
+  searchInput.placeholder = 'Search';
+  document.querySelector('.form').appendChild(searchInput);
+
+  submitInput.type = 'submit';
+  submitInput.value = 'Search';
+  document.querySelector('.form').appendChild(submitInput);
+
+  document.querySelector('.form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const query = document.querySelector('.search-input').value;
+
+    fetch(`${process.env.API}/doctors?q=${query}`)
+      .then(response => { return response.json() })
+      .then(data => {
+        rebuildTablesHTML(data);
+      }).catch(error => {
+        console.error('Error:', error);
+      });
+  });
+};
+
 getData();
+createForm();
