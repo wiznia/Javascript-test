@@ -2,6 +2,29 @@ import "./index.css";
 // Had to import this module so I could use async/await with Webpack
 import 'regenerator-runtime/runtime';
 
+function showError(error) {
+  // Creates first error div and inserts the error in it
+  if (!document.querySelector('.error')) {
+    const errorContainer = document.createElement('div');
+    errorContainer.classList = 'error';
+    errorContainer.innerHTML = `There was an error performing this request: ${error}`;
+
+    document.querySelector('.main-container').appendChild(errorContainer);
+    setTimeout(function() {
+      errorContainer.classList.add('error--active');
+    }, 500);
+    setTimeout(function() {
+      errorContainer.classList.remove('error--active');
+    }, 2500);
+  } else {
+    // If error already exists, display it on the page
+    document.querySelector('.error').classList.add('error--active');
+    setTimeout(function() {
+      document.querySelector('.error').classList.remove('error--active');
+    }, 2500);
+  }
+};
+
 // Data is not coming from the API but from the actual HTML file so I rebuild the table structure with the proper updated data each time the page loads
 function buildTablesHTML(data) {
   const isAvailable = data.available;
@@ -40,11 +63,12 @@ async function getLocationInfo() {
 
 async function fetchDoctors(param) {
   const params = param ? `?${param}=true` : '';
-  const response = await fetch(`${process.env.API}/doctors${params}`);
+  const response = await fetch(`${process.env.API}/doctors${params}`).catch(error => showError(error));
   response.json().then(data => {
     // Rebuild tables once the data arrives
     rebuildTablesHTML(data);
   }).catch(error => {
+    showError(error);
     console.error('Error:', error);
   });
 };
@@ -63,6 +87,7 @@ async function updateDoctors(upin, data) {
     .then(data => {
       console.log('Successfully updated API info', data);
     }).catch(error => {
+      showError(error);
       console.error('Error:', error);
     });
 };

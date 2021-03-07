@@ -3,3 +3,25 @@
   padding-bottom: 7.5rem;
   padding-top: 7.5rem;
 }
+
+.unavailable {
+  opacity: .5;
+}
+
+.error {
+  background-color: #ff0000;
+  border-radius: 5px;
+  margin: 20px;
+  padding: 20px;
+  width: 50%;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transition: transform 250ms ease;
+  transform: translateY(-200%) translateX(-50%);
+}
+
+.error--active {
+  transform: translateY(0) translateX(-50%);
+}
