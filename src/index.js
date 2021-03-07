@@ -2,6 +2,27 @@ import "./index.css";
 // Had to import this module so I could use async/await with Webpack
 import 'regenerator-runtime/runtime';
 
+// Data is not coming from the API but from the actual HTML file so I rebuild the table structure with the proper updated data each time the page loads
+function buildTablesHTML(data) {
+  const isAvailable = data.available;
+  return `
+    <tr data-upin="${data.upin}" class="${!isAvailable ? 'unavailable' : ''}">
+      <td>${data.name}</td>
+      <td>${data.zipCode}</td>
+      <td>${data.city}</td>
+      <td><button class="button button-outline">Mark as ${isAvailable ? 'Unavailable' : 'Available'}</button></td>
+    </tr>
+  `;
+};
+
+function rebuildTablesHTML(data) {
+  // Clear the tables so we can update it accordingly
+  document.querySelector('#doctors').innerHTML = '';
+  data.forEach(data => {
+    document.querySelector('#doctors').innerHTML += buildTablesHTML(data);
+  });
+};
+
 async function getLocationInfo() {
   // We first get the static HTML so we can insert its location properties to the API
   Array.from(document.querySelectorAll('[data-upin]')).forEach(doctor => {
@@ -22,6 +43,7 @@ async function fetchDoctors(param) {
   const response = await fetch(`${process.env.API}/doctors${params}`);
   response.json().then(data => {
     // Rebuild tables once the data arrives
+    rebuildTablesHTML(data);
   }).catch(error => {
     console.error('Error:', error);
   });
