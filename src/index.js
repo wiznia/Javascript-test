@@ -67,6 +67,36 @@ async function updateDoctors(upin, data) {
     });
 };
 
+// Select behavior
+document.querySelector('#availabilityFilterSelect').addEventListener('change', function() {
+  const selectedOption = this.value;
+
+  fetchDoctors(selectedOption);
+});
+
+
+// Available/Unavailable button behavior
+document.addEventListener('click', function(e) {
+  const el = e.target;
+
+  if (!el.matches('.button')) {
+    return;
+  }
+
+  const upin = el.closest('[data-upin]').dataset.upin;
+  const available = el.innerText.includes('UNAVAILABLE') ? false : true;
+  const data = {
+    available
+  }
+
+  updateAvailable(upin, data);
+});
+
+async function updateAvailable(upin, data) {
+  await updateDoctors(upin, data);
+  fetchDoctors();
+};
+
 async function getData() {
   await getLocationInfo();
   fetchDoctors();
